@@ -7,6 +7,7 @@
 	<groupId>io.github.zelinskyi</groupId>
 	<artifactId>gherkin-and-jacoco-integration</artifactId>
 	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
 
 	<properties>
 		<jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
@@ -14,6 +15,7 @@
 		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
 		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
+		<maven-war-plugin.version>2.4</maven-war-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -22,10 +24,49 @@
 			<artifactId>cukes-rest</artifactId>
 			<version>${cukes-rest.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>4.3.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+
+			<!-- Running app locally -->
+			<!--<plugin>-->
+				<!--<groupId>org.codehaus.cargo</groupId>-->
+				<!--<artifactId>cargo-maven2-plugin</artifactId>-->
+				<!--<configuration>-->
+					<!--<configuration>-->
+						<!--<properties>-->
+							<!--<cargo.servlet.port>8080</cargo.servlet.port>-->
+							<!--<cargo.logging>medium</cargo.logging>-->
+							<!--<cargo.jvmargs>-->
+								<!-- -Xdebug-->
+								<!-- -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=12345-->
+								<!-- -Xnoagent-->
+								<!-- -Djava.compiler=NONE-->
+							<!--</cargo.jvmargs>-->
+						<!--</properties>-->
+					<!--</configuration>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
+
+			<!-- War w/o xml -->
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${maven-war-plugin.version}</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
 
 			<!-- Add Gherkin tests and resources into common test class path -->
 			<plugin>
@@ -70,9 +111,44 @@
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<argLine>${surefireArgLine}</argLine>
-					<excludes>
-						<exclude>**/*IT.java</exclude>
-					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.cargo</groupId>
+				<artifactId>cargo-maven2-plugin</artifactId>
+				<version>1.4.14</version>
+				<executions>
+					<execution>
+						<id>start-container</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop-container</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<container>
+						<containerId>tomcat7x</containerId>
+						<artifactInstaller>
+							<groupId>org.apache.tomcat</groupId>
+							<artifactId>tomcat</artifactId>
+							<version>7.0.47</version>
+						</artifactInstaller>
+					</container>
+					<configuration>
+						<properties>
+							<cargo.servlet.port>9000</cargo.servlet.port>
+							<cargo.logging>medium</cargo.logging>
+						</properties>
+					</configuration>
 				</configuration>
 			</plugin>
 

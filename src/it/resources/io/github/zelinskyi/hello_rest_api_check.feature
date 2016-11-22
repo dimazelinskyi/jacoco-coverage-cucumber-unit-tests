@@ -1,7 +1,7 @@
 Feature: Test API github call
 
   Background:
-    Given let variable "apiPath" equal to "/users/octocat/orgs"
+    Given let variable "apiPath" equal to "/gherkin-and-jacoco-integration/hello"
 
   Scenario Outline: If a layout call is made with an incorrect brand/device, the api should return a 400.
 

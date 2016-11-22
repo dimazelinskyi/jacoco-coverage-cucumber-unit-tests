@@ -12,6 +12,6 @@ import org.junit.runner.RunWith;
 		glue = "lv.ctco.cukesrest.api",
 		strict = true
 )
-public class GitHubAPICucumberRunner {
+public class HelloRestAPICucumberRunner {
 
 }
