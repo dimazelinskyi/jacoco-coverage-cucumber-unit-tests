@@ -10,6 +10,8 @@
 	<packaging>war</packaging>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<jacoco-maven-plugin.version>0.7.7.201606060606</jacoco-maven-plugin.version>
 		<cukes-rest.version>0.2.16</cukes-rest.version>
 		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
