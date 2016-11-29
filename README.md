@@ -107,4 +107,9 @@ Two types of tests exist in this project-example: Unit tests (Junit framework) a
 ```
 
 ***
-#### 3. Jacoco reports
+#### 3. To run example execute
+```
+mvn clean install -P acceptance-tests
+```
+* Reports are generetd into the folder `.target/site`:
+![alt text](./etc/structure_reports_1.png "Folder reports structure")
