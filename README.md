@@ -2,6 +2,8 @@
 
 ![alt text](./etc/jacoco_2.png "Junit Cucumber Jacoco")
 
+Special thanks for https://github.com/Godin for support
+
 ***
 #### 1. This is an example of how you can configure your jacoco reports for different levels of tests.
 Two types of tests exist in this project-example: Unit tests (Junit framework) and Integration tests (Cucumber framwork).
