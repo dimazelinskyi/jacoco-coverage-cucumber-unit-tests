@@ -111,16 +111,15 @@ Two types of tests exist in this project-example: Unit tests (Junit framework) a
 ```
 mvn clean install -P acceptance-tests
 ```
-* Reports are generetd into the folder `.target/site`:
+* Reports are generated into the folder `.target/site`:
 
 ![alt text](./etc/structure_reports_1.png "Folder reports structure")
 
-* Check the reports in web browser:
 
-* Open reports for unit tests `.target/site/jacoco/index.html`
+* Open reports for unit tests in web browser `.target/site/jacoco/index.html`
 
 ![alt text](./etc/unit_reports.png "unit tests reports")
 
-* Open reports for cucumber tests `.target/site/jacoco-it/index.html`
+* Open reports for cucumber tests in web browser `.target/site/jacoco-it/index.html`
 
 ![alt text](./etc/cucumber_reports.png "cucumber tests reports")
