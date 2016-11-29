@@ -21,6 +21,7 @@
         <spring-ecosystem.version>4.3.4.RELEASE</spring-ecosystem.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <cargo-maven2-plugin.version>1.6.1</cargo-maven2-plugin.version>
+        <tomcat-container.version>7.0.47</tomcat-container.version>
     </properties>
 
     <dependencies>
@@ -84,7 +85,7 @@
                         </goals>
                         <configuration>
                             <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
-                            <propertyName>surefireArgLine</propertyName>
+                            <propertyName>surefireJacocoAgent</propertyName>
                         </configuration>
                     </execution>
                     <execution>
@@ -106,8 +107,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <argLine>${surefireArgLine}</argLine>
+                    <argLine>${surefireJacocoAgent}</argLine>
                 </configuration>
             </plugin>
         </plugins>
@@ -151,7 +151,37 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Running IT tests (aka Gherkin) -->
+                    <!-- Configuring and running Jacoco reports -->
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+                                    <propertyName>failsafeJacocoAgent</propertyName>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>post-integration-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report-integration</goal>
+                                </goals>
+                                <configuration>
+                                    <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
+                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Running IT tests (Gherkin style) -->
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${maven-failsafe-plugin.version}</version>
@@ -162,7 +192,7 @@
                                     <goal>verify</goal>
                                 </goals>
                                 <configuration>
-                                    <argLine>${failsafeArgLine}</argLine>
+                                    <argLine>${failsafeJacocoAgent}</argLine>
                                 </configuration>
                             </execution>
                         </executions>
@@ -172,56 +202,6 @@
                             </includes>
                             <testFailureIgnore>true</testFailureIgnore>
                         </configuration>
-                    </plugin>
-
-                    <!-- Configuring and running Jacoco reports -->
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>pre-unit-test</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                                <configuration>
-                                    <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
-                                    <propertyName>surefireArgLine</propertyName>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>pre-integration-test</id>
-                                <goals>
-                                    <goal>prepare-agent-integration</goal>
-                                </goals>
-                                <configuration>
-                                    <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
-                                    <propertyName>failsafeArgLine</propertyName>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>post-unit-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                                <configuration>
-                                    <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
-                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>post-integration-test</id>
-                                <goals>
-                                    <goal>report-integration</goal>
-                                </goals>
-                                <configuration>
-                                    <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
-                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.cargo</groupId>
@@ -249,14 +229,14 @@
                                 <artifactInstaller>
                                     <groupId>org.apache.tomcat</groupId>
                                     <artifactId>tomcat</artifactId>
-                                    <version>7.0.47</version>
+                                    <version>${tomcat-container.version}</version>
                                 </artifactInstaller>
                             </container>
                             <configuration>
                                 <properties>
                                     <cargo.servlet.port>9000</cargo.servlet.port>
                                     <cargo.logging>medium</cargo.logging>
-                                    <cargo.jvmargs>${failsafeArgLine}</cargo.jvmargs>
+                                    <cargo.jvmargs>${failsafeJacocoAgent}</cargo.jvmargs>
                                 </properties>
                             </configuration>
                         </configuration>
