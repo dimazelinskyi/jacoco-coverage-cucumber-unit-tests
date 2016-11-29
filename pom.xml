@@ -20,7 +20,7 @@
         <maven-war-plugin.version>2.4</maven-war-plugin.version>
         <spring-ecosystem.version>4.3.4.RELEASE</spring-ecosystem.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-        <cargo-maven2-plugin.version>1.6.1</cargo-maven2-plugin.version>
+        <cargo-maven2-plugin.version>1.4.14</cargo-maven2-plugin.version>
         <tomcat-container.version>7.0.47</tomcat-container.version>
     </properties>
 
@@ -89,6 +89,16 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>pre-integration-test</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+                            <propertyName>failsafeJacocoAgent</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>post-unit-test</id>
                         <phase>test</phase>
                         <goals>
@@ -97,6 +107,16 @@
                         <configuration>
                             <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>post-integration-test</id>
+                        <goals>
+                            <goal>report-integration</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -151,58 +171,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Configuring and running Jacoco reports -->
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>pre-integration-test</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>prepare-agent-integration</goal>
-                                </goals>
-                                <configuration>
-                                    <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
-                                    <propertyName>failsafeJacocoAgent</propertyName>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>post-integration-test</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>report-integration</goal>
-                                </goals>
-                                <configuration>
-                                    <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
-                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Running IT tests (Gherkin style) -->
-                    <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>${maven-failsafe-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                                <configuration>
-                                    <argLine>${failsafeJacocoAgent}</argLine>
-                                </configuration>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <includes>
-                                <include>**/*CucumberRunner*.java</include>
-                            </includes>
-                            <testFailureIgnore>true</testFailureIgnore>
-                        </configuration>
-                    </plugin>
+                    <!-- Start container for running IT tests (Gherkin style) -->
                     <plugin>
                         <groupId>org.codehaus.cargo</groupId>
                         <artifactId>cargo-maven2-plugin</artifactId>
@@ -210,7 +179,7 @@
                         <executions>
                             <execution>
                                 <id>start-container</id>
-                                <phase>pre-integration-test</phase>
+                                <phase>integration-test</phase>
                                 <goals>
                                     <goal>start</goal>
                                 </goals>
@@ -239,6 +208,28 @@
                                     <cargo.jvmargs>${failsafeJacocoAgent}</cargo.jvmargs>
                                 </properties>
                             </configuration>
+                        </configuration>
+                    </plugin>
+                    <!-- Running IT tests (Gherkin style) -->
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <argLine>${failsafeJacocoAgent}</argLine>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <includes>
+                                <include>**/*CucumberRunner*.java</include>
+                            </includes>
+                            <testFailureIgnore>true</testFailureIgnore>
                         </configuration>
                     </plugin>
                 </plugins>
